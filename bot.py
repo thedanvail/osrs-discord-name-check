@@ -60,14 +60,8 @@ async def background_check():
                     f'Hi {member.nick}, it looks like your username may have changed, please update your nickname to match :)'
                 )
 
-        await asyncio.sleep(60*60*24)  # task runs every day
+        await asyncio.sleep(60)  # task runs every day
 
 client.loop.create_task(background_check())
-
-@client.event
-async def member_join(member):
-    await member.send(
-        f'Welcome to the clan, {member.name}!'
-    )
 
 client.run(TOKEN)
