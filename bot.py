@@ -1,4 +1,4 @@
-# bot.py
+# name checking
 import os
 
 import asyncio
@@ -35,6 +35,7 @@ async def background_check():
     print(f'{guild.name} (id: {guild.id})')
     print(f'{guild.name} has: {len(guild.members)} members')
 
+
     # members = '\n - '.join([f'{member.name} | {member.nick}' for member in guild.members])
     # print(f'Names: \n - {members}')
 
@@ -46,20 +47,20 @@ async def background_check():
                 continue
 
             player_exists = exists_player(member.nick)
+            ##  for debugging
+            # print(f'{member.name} | {member.nick} | {exists_player(member.nick)}')
 
             if member.nick is None:
-                # print(f'{member.name} | {member.nick} | {exists_player(member.nick)}')
                 await member.send(
                     f'Hello {member.name}, please remember to add your username as your nickname!'
                 )
 
             elif not player_exists:
-                # print(f'{member.name} | {member.nick} | {exists_player(member.nick)}')
                 await member.send(
-                    f'Hi {member.name}, please update your user name! (is it still {member.nick}?)'
+                    f'Hi {member.nick}, it looks like your username may have changed, please update your nickname to match :)'
                 )
 
-        await asyncio.sleep(60)  # task runs every day
+        await asyncio.sleep(60*60*24)  # task runs every day
 
 client.loop.create_task(background_check())
 

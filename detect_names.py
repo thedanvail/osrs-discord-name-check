@@ -6,7 +6,10 @@ def exists_player(player_name: str) -> bool:
 
     response = requests.get(f'{hs_api}{player_name}')
 
-    if response.status_code != 200:
+    ## 200 is the response for an existing player
+    ## 404 is no response / missing
+
+    if response.status_code == 404:
         print(response.status_code)
         return False
 
@@ -14,9 +17,13 @@ def exists_player(player_name: str) -> bool:
         print(response.content)
         return True
 
-    # log response code
+    else:
+        print(response.status_code)
+        return False
 
-    # log score
+    ## For future:
+    # log response code
+    # log scores
 
     return False
 
