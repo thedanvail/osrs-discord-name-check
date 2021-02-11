@@ -15,7 +15,7 @@ GUILD = os.getenv('DISCORD_GUILD')
 intents = discord.Intents.default()
 intents.members = True
 
-client = commands.Bot(command_prefix=".")
+client = commands.Bot(command_prefix="!", intents=intents)
 # client = discord.Client(intents=intents)
 
 
@@ -45,8 +45,9 @@ async def background_check():
     # player_check = [f'{member.name} | {member.nick} | {exists_player(member.nick)} ' for member in guild.members]
 
     while not client.is_closed():
-        for member in guild.members:
-            if member.name == 'Test Bot - OSRS':
+
+        for member in client.get_all_members():
+            if member.bot:
                 continue
 
             player_exists = exists_player(member.nick)
@@ -60,7 +61,7 @@ async def background_check():
 
             elif not player_exists:
                 await member.send(
-                    f'Hi {member.nick}, it looks like your username may have changed, please update your nickname to match :)'
+                    f'Hi {member.nick}, it looks like your username may have changed, please update your nickname in {member.guild.name} to match :)'
                 )
 
         await asyncio.sleep(60)  # task runs every day
