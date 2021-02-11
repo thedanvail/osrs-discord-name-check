@@ -3,6 +3,7 @@ import os
 
 import asyncio
 import discord
+from discord.ext import commands
 from dotenv import load_dotenv
 from detect_names import exists_player
 
@@ -13,7 +14,9 @@ GUILD = os.getenv('DISCORD_GUILD')
 
 intents = discord.Intents.default()
 intents.members = True
-client = discord.Client(intents=intents)
+
+client = commands.Bot(command_prefix=".")
+# client = discord.Client(intents=intents)
 
 
 @client.event
@@ -61,6 +64,18 @@ async def background_check():
                 )
 
         await asyncio.sleep(60)  # task runs every day
+
+@client.command()
+async def ping(ctx) :
+    await ctx.send(f"🏓 Pong with {str(round(client.latency, 2))}")
+
+@client.command(name="whoami")
+async def whoami(ctx) :
+    await ctx.send(f"You are {ctx.message.author.name}")
+
+@client.command()
+async def clear(ctx, amount=3) :
+    await ctx.channel.purge(limit=amount)
 
 client.loop.create_task(background_check())
 
