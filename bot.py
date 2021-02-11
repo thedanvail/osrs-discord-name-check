@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from detect_names import exists_player
 
 
-load_dotenv()
+# load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 # GUILD = os.getenv('DISCORD_GUILD')
 
@@ -29,15 +29,6 @@ async def on_ready():
 
 async def background_check():
     await client.wait_until_ready()
-
-    # for guild in client.guilds:
-    #     if guild.name == GUILD:
-    #         break
-
-    # print(f'{client.user} has connected to following guilds:')
-    # print(f'{guild.name} (id: {guild.id})')
-    # print(f'{guild.name} has: {len(guild.members)} members')
-
 
     # members = '\n - '.join([f'{member.name} | {member.nick}' for member in guild.members])
     # print(f'Names: \n - {members}')
@@ -64,7 +55,7 @@ async def background_check():
                     f'Hi {member.nick}, it looks like your username may have changed, please update your nickname in {member.guild.name} to match :)'
                 )
 
-        await asyncio.sleep(60)  # task runs every day
+        await asyncio.sleep(60*60*24)  # task runs every day
 
 @client.command()
 async def ping(ctx) :
@@ -74,9 +65,6 @@ async def ping(ctx) :
 async def whoami(ctx) :
     await ctx.send(f"You are {ctx.message.author.name}")
 
-# @client.command()
-# async def clear(ctx, amount=3) :
-#     await ctx.channel.purge(limit=amount)
 
 client.loop.create_task(background_check())
 
