@@ -10,7 +10,7 @@ from detect_names import exists_player
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-GUILD = os.getenv('DISCORD_GUILD')
+# GUILD = os.getenv('DISCORD_GUILD')
 
 intents = discord.Intents.default()
 intents.members = True
@@ -30,13 +30,13 @@ async def on_ready():
 async def background_check():
     await client.wait_until_ready()
 
-    for guild in client.guilds:
-        if guild.name == GUILD:
-            break
+    # for guild in client.guilds:
+    #     if guild.name == GUILD:
+    #         break
 
-    print(f'{client.user} has connected to following guilds:')
-    print(f'{guild.name} (id: {guild.id})')
-    print(f'{guild.name} has: {len(guild.members)} members')
+    # print(f'{client.user} has connected to following guilds:')
+    # print(f'{guild.name} (id: {guild.id})')
+    # print(f'{guild.name} has: {len(guild.members)} members')
 
 
     # members = '\n - '.join([f'{member.name} | {member.nick}' for member in guild.members])
@@ -74,9 +74,9 @@ async def ping(ctx) :
 async def whoami(ctx) :
     await ctx.send(f"You are {ctx.message.author.name}")
 
-@client.command()
-async def clear(ctx, amount=3) :
-    await ctx.channel.purge(limit=amount)
+# @client.command()
+# async def clear(ctx, amount=3) :
+#     await ctx.channel.purge(limit=amount)
 
 client.loop.create_task(background_check())
 
