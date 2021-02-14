@@ -55,7 +55,7 @@ async def background_check():
                     f'Hi {member.nick}, it looks like your username may have changed, please update your nickname in {member.guild.name} to match :)'
                 )
 
-        await asyncio.sleep(60*60*24)  # task runs every day
+        await asyncio.sleep(60)  # task runs every day 60*60*24
 
 @client.command()
 async def ping(ctx) :
