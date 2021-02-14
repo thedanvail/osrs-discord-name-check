@@ -45,7 +45,7 @@ async def background_check():
             ##  for debugging
             # print(f'{member.name} | {member.nick} | {exists_player(member.nick)}')
 
-            if member.nick is None:
+            if member.nick is None and not exists_player(member.name):
                 await member.send(
                     f'Hello {member.name}, please remember to add your username as your nickname!'
                 )
@@ -55,7 +55,7 @@ async def background_check():
                     f'Hi {member.nick}, it looks like your username may have changed, please update your nickname in {member.guild.name} to match :)'
                 )
 
-        await asyncio.sleep(60)  # task runs every day 60*60*24
+        await asyncio.sleep(60*60*24)  # task runs every day 60*60*24
 
 @client.command()
 async def ping(ctx) :
