@@ -97,9 +97,15 @@ async def background_check():
                 )
                 member_dict[member] = datetime.now()
 
+            elif not exists_player(member.nick) and last_messaged is None:
+                await member.send(
+                    f'Hi {member.nick}, it looks like your username may have changed, please remember to update your nickname in {member.guild.name} to match!'
+                )
+                member_dict[member] = datetime.now()
+
             elif not exists_player(member.nick):
                 await member.send(
-                    f'Hi {member.nick}, it looks like your username may have changed, please remeber to update your nickname in {member.guild.name} to match!'
+                    f'Hey {member.nick}, friendly reminder to update your nickname in {member.guild.name} to your in-game name!'
                 )
                 member_dict[member] = datetime.now()
 
