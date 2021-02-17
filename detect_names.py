@@ -2,6 +2,7 @@ import requests
 
 
 def exists_player(player_name: str) -> bool:
+
     hs_api = 'https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player='
 
     response = requests.get(f'{hs_api}{player_name}')
@@ -19,7 +20,7 @@ def exists_player(player_name: str) -> bool:
 
     else:
         print(response.status_code)
-        return False
+        return True
 
     ## For future:
     # log response code
