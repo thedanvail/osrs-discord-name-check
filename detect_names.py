@@ -3,6 +3,9 @@ import requests
 
 def exists_player(player_name: str) -> bool:
 
+    if player_name is None:
+        return False
+
     hs_api = 'https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player='
 
     response = requests.get(f'{hs_api}{player_name}')

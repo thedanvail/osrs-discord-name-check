@@ -69,6 +69,14 @@ async def on_member_update(before, after):
         )
         return
 
+
+@client.event
+async def on_member_join(member):
+
+    await member.send(
+        f'Hi {member.name}, welcome to {member.guild.name}, we\'re glad to have you here!'
+    )
+
 async def background_check():
     """background_check Method
 
