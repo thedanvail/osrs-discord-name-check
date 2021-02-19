@@ -81,39 +81,46 @@ async def background_check():
 
     while not client.is_closed():
 
-        for member, last_messaged in member_dict.items():
+        for member in member_dict:
+
+            # skip bots
             if member.bot:
                 continue
 
+            last_checked = member_dict[member]
+
+            # print(f'{member.name}, {last_checked}')
+
             # message once per day
-            if last_messaged is not None and last_messaged + timedelta(days=1) > datetime.now():
+            if last_checked is not None and last_checked + timedelta(days=1) > datetime.now():
                 continue
 
-            print(member.name)
+            # if player exists, set check time and we're good for the day
+            if exists_player(member.name) or exists_player(member.nick):
+                member_dict[member] = datetime.now()
+                continue
 
-            if member.nick is None and not exists_player(member.name) and last_messaged is None:
+            # if no nickname and regular name doesn't match
+            if member.nick is None and not exists_player(member.name):
                 await member.send(
                     f'Hello {member.name}, please remember to add your username as your nickname in {member.guild.name}!'
                 )
                 member_dict[member] = datetime.now()
 
-            elif not exists_player(member.nick) and last_messaged is None:
-                await member.send(
-                    f'Hi {member.nick}, it looks like your username may have changed, please remember to update your nickname in {member.guild.name} to match!'
-                )
-                member_dict[member] = datetime.now()
-
-            elif not exists_player(member.nick):
+            # if no nickname and regular name doesn't match
+            elif not exists_player(member.name) and not exists_player(member.nick):
                 await member.send(
                     f'Hey {member.nick}, friendly reminder to update your nickname in {member.guild.name} to your in-game name!'
                 )
                 member_dict[member] = datetime.now()
 
-        await asyncio.sleep(10)  # task runs every day 60*60*24
+        # seconds between loop
+        await asyncio.sleep(60)
 
 @client.command()
 async def ping(ctx) :
     await ctx.send(f"🏓 Pong with {str(round(client.latency, 2))}")
+
 
 # @client.command(name="update")
 # async def update(ctx):
