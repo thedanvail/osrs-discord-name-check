@@ -6,6 +6,7 @@ def exists_player(player_name: str) -> bool:
     if player_name is None:
         return False
 
+    print(player_name)
     hs_api = 'https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player='
 
     response = requests.get(f'{hs_api}{player_name}')
@@ -21,6 +22,7 @@ def exists_player(player_name: str) -> bool:
         print(response.content)
         return True
 
+    # if high scores are down, or something else, ignore for now
     else:
         print(response.status_code)
         return True
