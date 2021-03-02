@@ -53,7 +53,7 @@ async def on_member_update(before, after):
 
     if exists_player(after.nick):
         await after.send(
-            f'Looks good, thanks {after.nick}!'
+            f'Looks great, thanks {after.nick}!'
         )
         return
 
@@ -88,7 +88,7 @@ async def on_member_join(member: discord.Member):
     )
 
     await member.send(
-        f"Please feel free to edit your nickname manually, or I can take your username here (as it looks in-game):"
+        f"Please feel free to edit your nickname manually if your name doesn't match your in-game name - or I can take your username here (as it looks in-game):"
     )
 
     try:
@@ -98,16 +98,15 @@ async def on_member_join(member: discord.Member):
         # print(ign)
         # member = ctx.message.author
         if exists_player(ign):
-            await member.send(f"Looks great, thanks {ign}!")
             await member.edit(nick=ign)
 
-        # else:
-            # await member.send(f"Hmm I'm not finding a match for {ign}. Try again?")
+        else:
+            await member.send(f"Hmm I'm not finding a match for {ign}. Please try changing your name manually")
             # await name(member)
     except discord.errors.Forbidden:
         print(member.guild.name)
         await member.send(
-            f"Oops, I don't have the permissions to edit nicknames in {member.guild.name}, please add it manually"
+            f"Ah dang, I don't have the permissions to edit nicknames in {member.guild.name}, please change it manually"
         )
 
     except asyncio.TimeoutError:
@@ -147,9 +146,9 @@ async def background_check():
             # cases:
             # 1. exists nick: great
             # 2. no nickname and exists name: ask once
-            # 3. no nick and not exists name: ask daily
-            # 4. no hs nick and exists name: ask daily
-            # 5. no hs nick and not exists name: ask daily
+            # 3. no nick and not exists name: ask daily until fixed
+            # 4. no hs nick and exists name: ask daily until fixed
+            # 5. no hs nick and not exists name: ask daily until fixed
 
             # 1. if player exists, set check time and we're good for the day
             if exists_player(member.nick):
@@ -158,12 +157,14 @@ async def background_check():
 
             # 2. player exists but no nickname, maybe couldn't set nickname to exact name
             elif member.nick is None and exists_player(member.name):
-                try:
-                    await member.edit(nick=member.name)
-                except discord.errors.Forbidden:
-                    print(f"Can't edit names in {member.guild.name}")
+
+                # try:
+                #     await member.edit(nick=member.name, reason='update nickname to name for consistency')
+                # except discord.errors.Forbidden:
+                #     print(f"Can't edit names in {member.guild.name}")
 
                 # member_dict[member] = datetime.now()
+                member_dict[member] = datetime.now()
                 continue
                 # await member.send(
                 #     f'If your in-game name is {member.name}, I\'m impressed with your identity consistency!'
