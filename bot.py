@@ -137,7 +137,7 @@ async def background_check():
 
             last_checked = member_dict[member]
 
-            # debug: print(f'{member.name}, {member.nick} | {last_checked}')
+            print(f'{member.name}, {member.nick} | {last_checked}')
 
             # message once per day
             if last_checked is not None and last_checked + timedelta(days=1) > datetime.now():
@@ -175,15 +175,12 @@ async def background_check():
 
             # 3. if no nickname and regular name doesn't match
             elif member.nick is None and not exists_player(member.name):
+
+                member_dict[member] = datetime.now()
                 await member.send(
                     f'Hello {member.name}, please remember to add your in-game name as your nickname in {member.guild.name}!'
                 )
-                member_dict[member] = datetime.now()
-
-            # if member.nick is None:
-            #     await member.send(
-            #         f'Hello {member.name}, please remember to add your username as your nickname in {member.guild.name}!'
-            #     )
+                continue
 
                 # await member.send(
                 #     f"Could you please add a nickname? Please enter as it appears in game."
@@ -239,7 +236,7 @@ async def ping(ctx) :
 
 @client.command(
     name="timer",
-    brief='Returns time until next message'
+    brief='Returns time until next check'
 )
 async def timer(ctx):
     last_checked = member_dict[ctx.message.author]
@@ -248,12 +245,13 @@ async def timer(ctx):
         next_message = datetime.now() + timedelta(days=1)
     else:
         next_message = last_checked + timedelta(days=1)
-    await ctx.send(f'Next reminder will be at: {next_message.strftime("%m/%d/%Y, %H:%M:%S")}.')
+
+    await ctx.send(f'Next check will be at: {next_message.strftime("%m/%d/%Y, %H:%M:%S")}.')
 
 
 @client.command(
     name="ignore",
-    brief='Allows you to turn off notifications from the bot for a pretty long time'
+    brief='Turn off notifications for a pretty long time'
 )
 async def ignore(ctx):
     member_dict[ctx.message.author] = datetime.now() + timedelta(days=365*2)
