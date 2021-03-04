@@ -55,6 +55,7 @@ async def on_member_update(before, after):
         await after.send(
             f'Looks great, thanks {after.nick}!'
         )
+        member_dict[after] = datetime.now()
         return
 
     elif after.nick is None and not exists_player(after.name):
@@ -247,6 +248,15 @@ async def timer(ctx):
         next_message = last_checked + timedelta(days=1)
 
     await ctx.send(f'Next check will be at: {next_message.strftime("%m/%d/%Y, %H:%M:%S")}.')
+
+
+@client.command(
+    name="time",
+    brief='Returns bot time'
+)
+async def time(ctx):
+    current_time = datetime.now()
+    await ctx.send(f'{current_time.strftime("%m/%d/%Y, %H:%M:%S")}')
 
 
 @client.command(
