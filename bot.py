@@ -20,11 +20,21 @@ client = commands.Bot(command_prefix="!", intents=intents)
 # client = discord.Client(intents=intents)
 
 
+# LoA
+# guild = client.get_guild(319781102950547457)
+
+
+role_name = "Nickname Approved!"
+
 @client.event
 async def on_ready():
     print('Logged in as')
     print(client.user.name)
-    print(client.user.id)
+    # print(client.user.id)
+    for guild in client.guilds:
+        print(guild)
+        print(guild.id)
+        print(guild.roles)
     print('------')
 
 @client.event
@@ -62,19 +72,22 @@ async def on_member_update(before, after):
         await after.send(
             f'Did you just remove your nickname? It looks like your discord name doesn\'t quite match.'
         )
+        await remove_approval(after)
         return
 
     # If no nickname and normal name doesn't exist
     elif not exists_player(before.name) and not exists_player(after.nick):
-            await after.send(
-                f'Hmm, it looks like {after.nick} might not be right.'
-            )
-            return
+        await after.send(
+            f'Hmm, it looks like {after.nick} might not be right.'
+        )
+        await remove_approval(after)
+        return
 
     elif not exists_player(after.nick):
         await after.send(
             f'Hey {after.nick}, could there be a typo? I can\'t find you in the high scores.'
         )
+        await remove_approval(after)
         return
 
 
@@ -116,6 +129,46 @@ async def on_member_join(member: discord.Member):
         )
 
 
+# @bot.command(pass_context=True)
+@commands.bot_has_permissions(manage_roles=True)
+@commands.has_role(role_name)
+async def remove_approval(user):
+    try:
+        role = discord.utils.get(guild.roles, name=role_name)
+        await user.remove_roles(role)
+
+    except discord.errors.Forbidden:
+        print("Whoops, maybe you're trying to edit server admin?")
+
+    else:
+        await user.send("Hey, sorry, gonna need you to update your name to your in-game name to approve you again!")
+
+
+# check name
+#  if name exists, allow speaking
+
+# if name no longer matches, give 5 days to change
+# if not, then revoke role
+
+# @client.command(pass_context=True)
+@commands.bot_has_permissions(manage_roles=True)
+@commands.has_role(role_name)
+async def consider_approval(ctx):
+    member = ctx.message.author
+    role = discord.utils.get(member.guild.roles, name="Nickname Approved!")
+    # await ctx.send(role)
+    if exists_player(member.nick):
+        try:
+            await member.add_roles(role)
+        except discord.ext.commands.errors.BotMissingPermissions:
+            await ctx.send("Ah, I don't have permission to save you, please contact your guild leader!")
+        else:
+            await ctx.send(f"hey {ctx.author.name}, {member.nick} has been giving a role called: {role.name}")
+
+    else:
+        await name_check(member)
+
+
 async def background_check():
     """background_check Method
 
@@ -125,8 +178,20 @@ async def background_check():
     await client.wait_until_ready()
 
     global member_dict
+    global member_last_failed
 
     member_dict = {member: None for member in client.get_all_members()}
+
+    member_last_failed = {member: None for member in client.get_all_members()}
+
+    global guild
+
+    # hwuh
+    # guild = client.get_guild(797237739748851713)
+
+    # bot testing
+    guild = client.get_guild(699647540340981790)
+
 
     while not client.is_closed():
 
@@ -159,12 +224,11 @@ async def background_check():
             # 2. player exists but no nickname, maybe couldn't set nickname to exact name
             elif member.nick is None and exists_player(member.name):
 
-                # try:
-                #     await member.edit(nick=member.name, reason='update nickname to name for consistency')
-                # except discord.errors.Forbidden:
-                #     print(f"Can't edit names in {member.guild.name}")
+                try:
+                    await member.edit(nick=member.name, reason='update nickname to name for consistency')
+                except discord.errors.Forbidden:
+                    print(f"Can't edit names in {member.guild.name}")
 
-                # member_dict[member] = datetime.now()
                 member_dict[member] = datetime.now()
                 continue
                 # await member.send(
@@ -181,28 +245,8 @@ async def background_check():
                 await member.send(
                     f'Hello {member.name}, please remember to add your in-game name as your nickname in {member.guild.name}!'
                 )
+                await remove_approval(member)
                 continue
-
-                # await member.send(
-                #     f"Could you please add a nickname? Please enter as it appears in game."
-                # )
-                #
-                # try:
-                #     msg = await client.wait_for("message", check=check, timeout=60)  # 60 seconds to reply
-                #
-                #     ign = msg.content
-                #     print(ign)
-                #     # member = ctx.message.author
-                #     if exists_player(ign):
-                #         await member.send(f"Looks great, thanks {ign}!")
-                #         await member.edit(nick=ign)
-                #
-                #     else:
-                #         await member.send(f"Hmm I'm not finding a match for {ign}. Try again?")
-                #         # await name(member)
-                #
-                # except asyncio.TimeoutError:
-                #     print('time out')
 
             # if no nickname and regular name doesn't match
 
@@ -211,9 +255,12 @@ async def background_check():
                     f'Hey {member.nick}, friendly reminder to update your nickname in {member.guild.name} to your in-game name!'
                 )
                 member_dict[member] = datetime.now()
+                await remove_approval(member)
 
         # seconds between loop
         await asyncio.sleep(60)
+
+
 
 @client.command(
     name='ping',
@@ -222,18 +269,55 @@ async def background_check():
 async def ping(ctx) :
     await ctx.send(f"🏓 Pong with {str(round(client.latency, 2))}")
 
-# @client.command(name="update")
-# async def update(ctx, *args):
-#
-#     member = ctx.message.author
-#     guild = ctx.guild
-#
-#     # ign = ' '.join(args)
-#
-#     await member.send(f"I can update your nickname for {guild} here - ")
-#
-#     await name(member)
+@client.command(name="update")
+async def update(ctx, *args):
 
+    member = ctx.message.author
+    # ign = ' '.join(args)
+    await name_check(member)
+
+
+async def name_check(member):
+
+    await member.send(f"""I can update your nickname for {guild} here -
+        Please enter as it appears in game, I'll ignore anything after a | sign."""
+    )
+
+    try:
+        msg = await client.wait_for("message", check=check, timeout=120)  # 60 seconds to reply
+
+        ign = msg.content
+        print(ign)
+
+        await name_edit(member, ign)
+
+    except asyncio.TimeoutError:
+        await member.send("Please go ahead to manually edit your nickname, or try me again")
+
+
+async def name_edit(member, name):
+    # member = ctx.message.author
+
+    if exists_player(name):
+        try:
+            await member.edit(nick=name)
+
+        except discord.errors.Forbidden:
+            await member.send(f"Ah, looks like I'm lacking permissions to edit in {guild.name}")
+
+        except AttributeError:
+            await member.send("Gotta invoke me from a guild channel! Sorry I don't make the rules.")
+
+        except discord.ext.commands.errors.CommandInvokeError:
+            await member.send("Something weird happened, sorry try again")
+
+        else:
+            # await member.send(f"Looks great, thanks {name}!")
+            print('successful name add')
+
+    else:
+        await member.send(f"Hmm I'm not finding a match for {name}. Try again?")
+        await name_check(member)
 
 @client.command(
     name="timer",

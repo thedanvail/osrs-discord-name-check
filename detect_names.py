@@ -1,10 +1,12 @@
 import requests
 
 
-def exists_player(player_name: str) -> bool:
+def exists_player(player_name: str, ignore_char = "|") -> bool:
 
     if player_name is None:
         return False
+
+    player_name = player_name.split(ignore_char)[0]
 
     print(player_name)
     hs_api = 'https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player='
