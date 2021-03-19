@@ -66,6 +66,7 @@ async def on_member_update(before, after):
             f'Looks great, thanks {after.nick}!'
         )
         member_dict[after] = datetime.now()
+        await grant_approval(after)
         return
 
     elif after.nick is None and not exists_player(after.name):
@@ -141,7 +142,28 @@ async def remove_approval(user):
         print("Whoops, maybe you're trying to edit server admin?")
 
     else:
-        await user.send("Hey, sorry, gonna need you to update your name to your in-game name to approve you again!")
+        await user.send("Sorry, gonna need you to update your name to your in-game name to approve you again!")
+
+
+
+# @bot.command(pass_context=True)
+@commands.bot_has_permissions(manage_roles=True)
+@commands.has_role(role_name)
+async def grant_approval(user):
+    try:
+        role = discord.utils.get(guild.roles, name=role_name)
+        if role not in user.roles:
+            await user.add_roles(role)
+            await user.send(f"You're awesome, and you can now speak in {user.guild.name}")
+            print(f"Role granted to {user.name} in {user.guild.name}")
+
+    except discord.errors.Forbidden:
+        print("Whoops, maybe you're trying to edit server admin?")
+
+    else:
+        print(f"Finished granting")
+        # await user.send("You've been granted the speaking stick!")
+
 
 
 # check name
@@ -155,7 +177,7 @@ async def remove_approval(user):
 @commands.has_role(role_name)
 async def consider_approval(ctx):
     member = ctx.message.author
-    role = discord.utils.get(member.guild.roles, name="Nickname Approved!")
+    role = discord.utils.get(member.guild.roles, name=role_name)
     # await ctx.send(role)
     if exists_player(member.nick):
         try:
@@ -219,6 +241,7 @@ async def background_check():
             # 1. if player exists, set check time and we're good for the day
             if exists_player(member.nick):
                 member_dict[member] = datetime.now()
+                await grant_approval(member)
                 continue
 
             # 2. player exists but no nickname, maybe couldn't set nickname to exact name
@@ -230,6 +253,8 @@ async def background_check():
                     print(f"Can't edit names in {member.guild.name}")
 
                 member_dict[member] = datetime.now()
+
+                await grant_approval(member)
                 continue
                 # await member.send(
                 #     f'If your in-game name is {member.name}, I\'m impressed with your identity consistency!'
@@ -279,8 +304,7 @@ async def update(ctx, *args):
 
 async def name_check(member):
 
-    await member.send(f"""I can update your nickname for {guild} here -
-        Please enter as it appears in game, I'll ignore anything after a | sign."""
+    await member.send(f"""I can update your nickname for {guild} here - \n Please enter as it appears in game, I'll ignore anything after a | sign."""
     )
 
     try:
