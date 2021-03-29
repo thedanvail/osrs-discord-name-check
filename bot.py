@@ -136,13 +136,17 @@ async def on_member_join(member: discord.Member):
 async def remove_approval(user):
     try:
         role = discord.utils.get(guild.roles, name=role_name)
-        await user.remove_roles(role)
+
+        if role in user.roles:
+            await user.remove_roles(role)
+            await user.send("Sorry, gonna need you to update your name to your in-game name to approve you again!")
+
 
     except discord.errors.Forbidden:
         print("Whoops, maybe you're trying to edit server admin?")
 
     else:
-        await user.send("Sorry, gonna need you to update your name to your in-game name to approve you again!")
+        print(f"End remove role attempt for {user.name}")
 
 
 
