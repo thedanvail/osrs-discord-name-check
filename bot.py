@@ -285,6 +285,7 @@ async def background_check():
                 )
                 member_dict[member] = datetime.now()
                 await remove_approval(member)
+                await member.send(f'Debug message: time set to {member_dict[member]}')
 
         # seconds between loop
         await asyncio.sleep(60)
