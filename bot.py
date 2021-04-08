@@ -20,6 +20,8 @@ client = commands.Bot(command_prefix="!", intents=intents)
 # client = discord.Client(intents=intents)
 
 
+member_role_removal_timer = None
+
 # LoA
 # guild = client.get_guild(319781102950547457)
 
@@ -134,6 +136,22 @@ async def on_member_join(member: discord.Member):
 @commands.bot_has_permissions(manage_roles=True)
 @commands.has_role(role_name)
 async def remove_approval(user):
+
+
+    # on first time,
+    if member_role_removal_timer is None or member_role_removal_timer[user] is None:
+
+        member_role_removal_timer[user] = datetime.now()
+        return
+
+    failed_at = member_role_removal_timer[user]
+
+    print(f'{user.name}, {user.nick} | {failed_at}')
+
+    # message once per day
+    if failed_at is not None and failed_at + timedelta(days=5) > datetime.now():
+        return
+
     try:
         role = discord.utils.get(guild.roles, name=role_name)
 
@@ -205,10 +223,13 @@ async def background_check():
 
     global member_dict
     global member_last_failed
+    global member_role_removal_timer
 
     member_dict = {member: None for member in client.get_all_members()}
 
     member_last_failed = {member: None for member in client.get_all_members()}
+
+    member_role_removal_timer = {member: None for member in client.get_all_members()}
 
     global guild
 
