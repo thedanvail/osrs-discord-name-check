@@ -137,6 +137,9 @@ async def on_member_join(member: discord.Member):
 @commands.has_role(role_name)
 async def remove_approval(user):
 
+    failed_at = member_role_removal_timer[user]
+
+    print(f'{user.name}, {user.nick} | considered role removal at {failed_at}')
 
     # on first time,
     if member_role_removal_timer is None or member_role_removal_timer[user] is None:
@@ -144,12 +147,11 @@ async def remove_approval(user):
         member_role_removal_timer[user] = datetime.now()
         return
 
-    failed_at = member_role_removal_timer[user]
 
-    print(f'{user.name}, {user.nick} | {failed_at}')
 
     # message once per day
-    if failed_at is not None and failed_at + timedelta(days=5) > datetime.now():
+    # wait just 2 mins while testing
+    if failed_at is not None and failed_at + timedelta(minutes=2) > datetime.now():
         return
 
     try:
@@ -159,6 +161,7 @@ async def remove_approval(user):
             await user.remove_roles(role)
             await user.send("Sorry, gonna need you to update your name to your in-game name to approve you again!")
 
+            print(f'{user.name}, {user.nick} | role removed at {failed_at}')
 
     except discord.errors.Forbidden:
         print("Whoops, maybe you're trying to edit server admin?")
@@ -221,16 +224,6 @@ async def background_check():
     """
     await client.wait_until_ready()
 
-    global member_dict
-    global member_last_failed
-    global member_role_removal_timer
-
-    member_dict = {member: None for member in client.get_all_members()}
-
-    member_last_failed = {member: None for member in client.get_all_members()}
-
-    member_role_removal_timer = {member: None for member in client.get_all_members()}
-
     global guild
 
     # hwuh
@@ -239,10 +232,30 @@ async def background_check():
     # bot testing
     guild = client.get_guild(699647540340981790)
 
+    global member_dict
+    global member_last_failed
+    global member_role_removal_timer
+
+    # member_dict = {member: None for member in guild.get_all_members()}
+    # member_last_failed = {member: None for member in guild.get_all_members()}
+    # member_role_removal_timer = {member: None for member in guild.get_all_members()}
+
+    member_dict = {member: None for member in guild.members}
+    member_last_failed = {member: None for member in guild.members}
+    member_role_removal_timer = {member: None for member in guild.members}
+
+    check_counter = {member: 0 for member in guild.members}
+
+
+    print([(x.nick, x.guild) for x in member_dict])
+    # print(member_last_failed)
+    # print(member_role_removal_timer)
+
 
     while not client.is_closed():
-
+        print('----------')
         for member in member_dict:
+
 
             # skip bots
             if member.bot:
@@ -251,6 +264,9 @@ async def background_check():
             last_checked = member_dict[member]
 
             print(f'{member.name}, {member.nick} | {last_checked}')
+
+            check_counter[member] += 1
+            print(check_counter[member])
 
             # message once per day
             if last_checked is not None and last_checked + timedelta(days=1) > datetime.now():
@@ -306,7 +322,7 @@ async def background_check():
                 )
                 member_dict[member] = datetime.now()
                 await remove_approval(member)
-                await member.send(f'Debug message: time set to {member_dict[member]}')
+                await member.send(f'Debug message: time set to {member_dict[member]}. {check_counter[member]} checks since last refresh')
 
         # seconds between loop
         await asyncio.sleep(60)
