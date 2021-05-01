@@ -269,7 +269,7 @@ async def background_check():
             print(check_counter[member])
 
             # message once per day
-            if last_checked is not None and last_checked + timedelta(days=1) > datetime.now():
+            if last_checked is not None and last_checked + timedelta(hours=25) > datetime.now():
                 continue
 
             # cases:
