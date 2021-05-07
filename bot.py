@@ -65,7 +65,8 @@ async def on_member_update(before, after):
         await after.send(
             f'Looks great, thanks {after.nick}!'
         )
-        member_dict[after] = datetime.now()
+        update_user_info(after.nick)
+        # member_dict[after] = datetime.now()
         await grant_approval(after)
         return
 
@@ -223,21 +224,14 @@ async def background_check():
     guild = client.get_guild(699647540340981790)
 
     global member_dict
-    global member_last_failed
 
     # member_dict = {member: None for member in guild.get_all_members()}
-    # member_last_failed = {member: None for member in guild.get_all_members()}
-
 
     member_dict = {member: None for member in guild.members}
-    member_last_failed = {member: None for member in guild.members}
 
     check_counter = {member: 0 for member in guild.members}
 
-
     print([(x.nick, x.guild) for x in member_dict])
-    # print(member_last_failed)
-
 
     while not client.is_closed():
         print('----------')
@@ -296,7 +290,10 @@ async def background_check():
             # 3. if no nickname and regular name doesn't match
             elif member.nick is None and not exists_player(member.name):
 
-                member_dict[member] = datetime.now()
+                # member_dict[member] = datetime.now()
+
+                update_user_fail(member.name)
+
                 await member.send(
                     f'Hello {member.name}, please remember to add your in-game name as your nickname in {member.guild.name}!'
                 )
@@ -306,10 +303,13 @@ async def background_check():
             # if no nickname and regular name doesn't match
 
             elif not exists_player(member.nick):
+
+                update_user_fail(member.nick)
+
                 await member.send(
                     f'Hey {member.nick}, friendly reminder to update your nickname in {member.guild.name} to your in-game name!'
                 )
-                member_dict[member] = datetime.now()
+                # member_dict[member] = datetime.now()
                 await remove_approval(member)
                 await member.send(f'Debug message: time set to {member_dict[member]}. {check_counter[member]} checks since last refresh')
 
