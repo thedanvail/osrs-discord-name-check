@@ -5,6 +5,7 @@ import asyncio
 import discord
 from discord.ext import commands
 from detect_names import exists_player
+from connect_db import *
 from datetime import datetime, timedelta
 
 
@@ -18,9 +19,6 @@ intents.members = True
 
 client = commands.Bot(command_prefix="!", intents=intents)
 # client = discord.Client(intents=intents)
-
-
-member_role_removal_timer = None
 
 # LoA
 # guild = client.get_guild(319781102950547457)
@@ -137,17 +135,9 @@ async def on_member_join(member: discord.Member):
 @commands.has_role(role_name)
 async def remove_approval(user):
 
-    failed_at = member_role_removal_timer[user]
+    failed_at = last_failed_at(user.nick) or last_failed_at(user.name)
 
     print(f'{user.name}, {user.nick} | considered role removal at {failed_at}')
-
-    # on first time,
-    if member_role_removal_timer is None or member_role_removal_timer[user] is None:
-
-        member_role_removal_timer[user] = datetime.now()
-        return
-
-
 
     # message once per day
     # wait just 2 mins while testing
@@ -234,34 +224,30 @@ async def background_check():
 
     global member_dict
     global member_last_failed
-    global member_role_removal_timer
 
     # member_dict = {member: None for member in guild.get_all_members()}
     # member_last_failed = {member: None for member in guild.get_all_members()}
-    # member_role_removal_timer = {member: None for member in guild.get_all_members()}
+
 
     member_dict = {member: None for member in guild.members}
     member_last_failed = {member: None for member in guild.members}
-    member_role_removal_timer = {member: None for member in guild.members}
 
     check_counter = {member: 0 for member in guild.members}
 
 
     print([(x.nick, x.guild) for x in member_dict])
     # print(member_last_failed)
-    # print(member_role_removal_timer)
 
 
     while not client.is_closed():
         print('----------')
         for member in member_dict:
 
-
             # skip bots
             if member.bot:
                 continue
 
-            last_checked = member_dict[member]
+            last_checked = last_pulled_at(member.nick) or last_pulled_at(member.name)
 
             print(f'{member.name}, {member.nick} | {last_checked}')
 
@@ -281,7 +267,9 @@ async def background_check():
 
             # 1. if player exists, set check time and we're good for the day
             if exists_player(member.nick):
-                member_dict[member] = datetime.now()
+
+                update_user_info(member.nick)
+
                 await grant_approval(member)
                 continue
 
@@ -293,10 +281,11 @@ async def background_check():
                 except discord.errors.Forbidden:
                     print(f"Can't edit names in {member.guild.name}")
 
-                member_dict[member] = datetime.now()
+                update_user_info(member.name)
 
                 await grant_approval(member)
                 continue
+
                 # await member.send(
                 #     f'If your in-game name is {member.name}, I\'m impressed with your identity consistency!'
                 #     f'If not, please update your nickname in {member.guild.name} so we know who you are.'
@@ -390,7 +379,8 @@ async def name_edit(member, name):
     brief='Returns time until next check'
 )
 async def timer(ctx):
-    last_checked = member_dict[ctx.message.author]
+    # last_checked = member_dict[ctx.message.author]
+    last_checked = last_pulled_at(ctx.message.author.nick) or last_pulled_at(ctx.message.author.name)
 
     if last_checked is None:
         next_message = datetime.now() + timedelta(days=1)
@@ -414,9 +404,15 @@ async def time(ctx):
     brief='Turn off notifications for a pretty long time'
 )
 async def ignore(ctx):
-    member_dict[ctx.message.author] = datetime.now() + timedelta(days=365*2)
+    update_user_info(ctx.message.author.name, datetime.now() + timedelta(days=365*2))
+    # member_dict[ctx.message.author] = datetime.now() + timedelta(days=365*2)
     await ctx.send(f"You got it, no more from me.")
 
+
+@client.command(pass_context=True)
+@commands.has_any_role("Dev", "Leader")
+async def user_list(ctx):
+    await ctx.send(*print_table(), sep='\n')
 
 client.loop.create_task(background_check())
 
