@@ -4,6 +4,7 @@
     <list default="true" id="6b5a3bfe-1766-46d4-a4f7-9b891207ef72" name="Default Changelist" comment="clean up messaging and comments">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/connect_db.py" beforeDir="false" afterPath="$PROJECT_DIR$/connect_db.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -15,46 +16,49 @@
     <session id="1976791229">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="4" />
+          <entry key="project.closed" value="7" />
           <entry key="project.open.time.0" value="1" />
           <entry key="project.open.time.10" value="1" />
           <entry key="project.open.time.11" value="1" />
+          <entry key="project.open.time.20" value="1" />
           <entry key="project.open.time.3" value="1" />
           <entry key="project.open.time.4" value="2" />
-          <entry key="project.open.time.5" value="1" />
+          <entry key="project.open.time.5" value="2" />
+          <entry key="project.open.time.7" value="1" />
           <entry key="project.open.time.8" value="1" />
           <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="9" />
+          <entry key="project.opened" value="12" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="env" value="1" />
           <entry key="gitignore" value="1" />
-          <entry key="py" value="5" />
+          <entry key="py" value="6" />
           <entry key="txt" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="PLAIN_TEXT" value="4" />
-          <entry key="Python" value="5" />
+          <entry key="Python" value="6" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="Python Console" value="771" />
+          <entry key="Python Console" value="1687" />
+          <entry key="dummy" value="1" />
           <entry key="env" value="67" />
           <entry key="gitignore" value="9" />
-          <entry key="py" value="11481" />
+          <entry key="py" value="15011" />
           <entry key="txt" value="64" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key=".env file" value="16" />
-          <entry key="PLAIN_TEXT" value="124" />
-          <entry key="Python" value="12252" />
+          <entry key="PLAIN_TEXT" value="125" />
+          <entry key="Python" value="16698" />
         </counts>
       </usages-collector>
     </session>
@@ -64,25 +68,28 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/bot.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="418">
-              <caret line="324" column="86" lean-forward="true" selection-start-line="324" selection-start-column="86" selection-end-line="324" selection-end-column="86" />
+            <state relative-caret-position="71">
+              <caret line="225" lean-forward="true" selection-start-line="225" selection-end-line="225" />
               <folding>
                 <element signature="e#16#25#0" expanded="true" />
-                <marker date="1618359299930" expanded="true" signature="5283:6116" ph="..." />
-                <marker date="1618359299930" expanded="true" signature="6114:6116" ph="..." />
-                <marker date="1618359299930" expanded="true" signature="11886:11888" ph="..." />
+                <marker date="1620628286200" expanded="true" signature="5208:6073" ph="..." />
+                <marker date="1620628286200" expanded="true" signature="6039:6073" ph="..." />
+                <marker date="1620628286200" expanded="true" signature="11668:11670" ph="..." />
+                <marker date="1620628286200" expanded="true" signature="12798:12845" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/detect_names.py">
+        <entry file="file://$PROJECT_DIR$/connect_db.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="8" column="43" selection-start-line="8" selection-start-column="43" selection-end-line="8" selection-end-column="43" />
+            <state relative-caret-position="280">
+              <caret line="229" lean-forward="true" selection-start-line="229" selection-end-line="229" />
               <folding>
-                <marker date="1615968667824" expanded="true" signature="208:209" ph="..." />
+                <marker date="1620667865900" expanded="true" signature="135:189" ph="..." />
+                <marker date="1620667865900" expanded="true" signature="210:215" ph="..." />
+                <marker date="1620667865900" expanded="true" signature="210:801" ph="..." />
               </folding>
             </state>
           </provider>
@@ -99,11 +106,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>create_dm</find>
-      <find>player_ch</find>
-      <find>bot.</find>
-      <find>None</find>
-      <find>please remember to update</find>
       <find>please remem</find>
       <find>looks g</find>
       <find>please remember</find>
@@ -118,7 +120,26 @@
       <find>remove_approval</find>
       <find>remove_a</find>
       <find>role</find>
+      <find>role_removal</find>
+      <find>member_role_removal</find>
+      <find>member_last_failed</find>
+      <find>last_failed_at</find>
+      <find>member_dict</find>
+      <find>excluded.</find>
+      <find>timer</find>
+      <find>update_user</find>
+      <find>result</find>
+      <find>print(</find>
+      <find>update_user_info</find>
+      <find>last_pulled_at</find>
+      <find>discord_name</find>
+      <find>last_failed</find>
+      <find>failed to update</find>
+      <find>last_failed_At</find>
     </findStrings>
+    <replaceStrings>
+      <replace>discord_id</replace>
+    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -130,15 +151,16 @@
         <option value="$PROJECT_DIR$/requirements.txt" />
         <option value="$PROJECT_DIR$/venv/runtime.txt" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/connect_dynamo.py" />
         <option value="$PROJECT_DIR$/detect_names.py" />
         <option value="$PROJECT_DIR$/bot.py" />
+        <option value="$PROJECT_DIR$/connect_db.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="379" />
     <option name="y" value="24" />
-    <option name="width" value="1295" />
+    <option name="width" value="1490" />
     <option name="height" value="1027" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -147,7 +169,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -164,10 +185,11 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="settings.editor.selected.configurable" value="configurable.group.tools" />
+    <property name="settings.editor.selected.configurable" value="vcs.Git" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -242,24 +264,33 @@
     <option name="localTasksCounter" value="3" />
     <servers />
   </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
   <component name="ToolWindowManager">
-    <frame x="379" y="24" width="1295" height="1027" extended-state="0" />
+    <frame x="0" y="24" width="1490" height="1027" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21069433" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18922652" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.4053476" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49861878" visible="true" weight="0.4053476" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39957264" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32941177" />
       <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Terminal" order="8" weight="0.26524064" />
-      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="10" weight="0.26631016" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.4993094" weight="0.26524064" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5020718" side_tool="true" weight="0.26631016" />
+      <window_info anchor="bottom" id="Python Console" order="10" sideWeight="0.49792817" weight="0.26631016" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -325,25 +356,35 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bot.py">
+    <entry file="file://$PROJECT_DIR$/detect_names.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="418">
-          <caret line="324" column="86" lean-forward="true" selection-start-line="324" selection-start-column="86" selection-end-line="324" selection-end-column="86" />
+        <state relative-caret-position="7">
+          <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/connect_db.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="280">
+          <caret line="229" lean-forward="true" selection-start-line="229" selection-end-line="229" />
           <folding>
-            <element signature="e#16#25#0" expanded="true" />
-            <marker date="1618359299930" expanded="true" signature="5283:6116" ph="..." />
-            <marker date="1618359299930" expanded="true" signature="6114:6116" ph="..." />
-            <marker date="1618359299930" expanded="true" signature="11886:11888" ph="..." />
+            <marker date="1620667865900" expanded="true" signature="135:189" ph="..." />
+            <marker date="1620667865900" expanded="true" signature="210:215" ph="..." />
+            <marker date="1620667865900" expanded="true" signature="210:801" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/detect_names.py">
+    <entry file="file://$PROJECT_DIR$/bot.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="43" selection-start-line="8" selection-start-column="43" selection-end-line="8" selection-end-column="43" />
+        <state relative-caret-position="71">
+          <caret line="225" lean-forward="true" selection-start-line="225" selection-end-line="225" />
           <folding>
-            <marker date="1615968667824" expanded="true" signature="208:209" ph="..." />
+            <element signature="e#16#25#0" expanded="true" />
+            <marker date="1620628286200" expanded="true" signature="5208:6073" ph="..." />
+            <marker date="1620628286200" expanded="true" signature="6039:6073" ph="..." />
+            <marker date="1620628286200" expanded="true" signature="11668:11670" ph="..." />
+            <marker date="1620628286200" expanded="true" signature="12798:12845" ph="..." />
           </folding>
         </state>
       </provider>
