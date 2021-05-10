@@ -28,6 +28,7 @@ role_name = "Nickname Approved!"
 
 @client.event
 async def on_ready():
+    create_table()
     print('Logged in as')
     print(client.user.name)
     # print(client.user.id)
@@ -65,7 +66,7 @@ async def on_member_update(before, after):
         await after.send(
             f'Looks great, thanks {after.nick}!'
         )
-        update_user_info(after.nick)
+        update_user_info(after.id, after.nick)
         # member_dict[after] = datetime.now()
         await grant_approval(after)
         return
@@ -136,7 +137,7 @@ async def on_member_join(member: discord.Member):
 @commands.has_role(role_name)
 async def remove_approval(user):
 
-    failed_at = last_failed_at(user.nick) or last_failed_at(user.name)
+    failed_at = last_failed_at(user.id) ##last_failed_at(user.nick) or last_failed_at(user.name)
 
     print(f'{user.name}, {user.nick} | considered role removal at {failed_at}')
 
@@ -206,7 +207,7 @@ async def consider_approval(ctx):
     else:
         await name_check(member)
 
-
+# this is the main loop to check
 async def background_check():
     """background_check Method
 
@@ -241,7 +242,11 @@ async def background_check():
             if member.bot:
                 continue
 
-            last_checked = last_pulled_at(member.nick) or last_pulled_at(member.name)
+            last_checked = last_pulled_at(member.id) or last_failed_at(member.id)
+            #last_pulled_at(member.nick) or last_pulled_at(member.name)
+
+
+            print(member)
 
             print(f'{member.name}, {member.nick} | {last_checked}')
 
@@ -262,7 +267,7 @@ async def background_check():
             # 1. if player exists, set check time and we're good for the day
             if exists_player(member.nick):
 
-                update_user_info(member.nick)
+                update_user_info(member.id, member.nick)
 
                 await grant_approval(member)
                 continue
@@ -275,7 +280,7 @@ async def background_check():
                 except discord.errors.Forbidden:
                     print(f"Can't edit names in {member.guild.name}")
 
-                update_user_info(member.name)
+                update_user_info(member.id, member.name)
 
                 await grant_approval(member)
                 continue
@@ -292,7 +297,7 @@ async def background_check():
 
                 # member_dict[member] = datetime.now()
 
-                update_user_fail(member.name)
+                update_user_fail(member.id, member.name)
 
                 await member.send(
                     f'Hello {member.name}, please remember to add your in-game name as your nickname in {member.guild.name}!'
@@ -304,14 +309,14 @@ async def background_check():
 
             elif not exists_player(member.nick):
 
-                update_user_fail(member.nick)
+                update_user_fail(member.id, member.nick)
 
                 await member.send(
                     f'Hey {member.nick}, friendly reminder to update your nickname in {member.guild.name} to your in-game name!'
                 )
                 # member_dict[member] = datetime.now()
                 await remove_approval(member)
-                await member.send(f'Debug message: time set to {member_dict[member]}. {check_counter[member]} checks since last refresh')
+                await member.send(f'Debug message: time set to {last_pulled_at(member.id)}. {check_counter[member]} checks since last refresh')
 
         # seconds between loop
         await asyncio.sleep(60)
@@ -380,7 +385,7 @@ async def name_edit(member, name):
 )
 async def timer(ctx):
     # last_checked = member_dict[ctx.message.author]
-    last_checked = last_pulled_at(ctx.message.author.nick) or last_pulled_at(ctx.message.author.name)
+    last_checked = last_pulled_at(ctx.message.author.id) ##or last_pulled_at(ctx.message.author)
 
     if last_checked is None:
         next_message = datetime.now() + timedelta(days=1)
@@ -404,7 +409,7 @@ async def time(ctx):
     brief='Turn off notifications for a pretty long time'
 )
 async def ignore(ctx):
-    update_user_info(ctx.message.author.name, datetime.now() + timedelta(days=365*2))
+    update_user_info(ctx.message.author.id, datetime.now() + timedelta(days=365*2))
     # member_dict[ctx.message.author] = datetime.now() + timedelta(days=365*2)
     await ctx.send(f"You got it, no more from me.")
 

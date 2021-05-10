@@ -1,6 +1,7 @@
 from detect_names import get_score
 import os
 import psycopg2
+import discord
 
 from datetime import datetime, timezone
 
@@ -45,7 +46,8 @@ def create_table():
     # -- Table Definition ----------------------------------------------
     create_table_query = """
     CREATE TABLE IF NOT EXISTS user_data (
-        username text PRIMARY KEY,
+        discord_id bigint PRIMARY KEY,
+        rsn text,
         pulled_at timestamp without time zone,
         last_failed_at timestamp without time zone
     );
@@ -57,6 +59,17 @@ def create_table():
 
         print("Table created")
 
+        col_name_query = """
+        SELECT column_name
+          FROM information_schema.columns
+         WHERE table_name = 'user_data'
+        """
+
+        cur.execute(col_name_query)
+        result = cur.fetchall()
+        unpack_result = [x for (x,) in result]
+        print(unpack_result)
+
     except (Exception, psycopg2.Error) as error:
         print("Failed to create table", error)
 
@@ -66,23 +79,35 @@ def create_table():
             conn.close()
 
 
-def update_user_info(user, time=datetime.now(timezone.utc)):
+def update_user_info(discord_id, rsn=None, time=datetime.now(timezone.utc)):
     # Insert into table
 
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     cur = conn.cursor()
 
-    update_query = """
-    INSERT INTO user_data (username, pulled_at, last_failed_at) values (%s, %s, NULL)
-    ON CONFLICT (username) DO UPDATE SET 
-    (username, score, pulled_at, last_failed_at) = 
-    (EXCLUDED.username, EXCLUDED.pulled_at, EXCLUDED.last_failed_at)
-    """
+    if rsn:
+        update_query = """
+        INSERT INTO user_data (discord_id, rsn, pulled_at, last_failed_at) values (%s, %s, %s, NULL)
+        ON CONFLICT (discord_id) DO UPDATE SET 
+        (discord_id, rsn, pulled_at, last_failed_at) = 
+        (EXCLUDED.discord_id, EXCLUDED.rsn, EXCLUDED.pulled_at, EXCLUDED.last_failed_at)
+        """
+
+        record_to_insert = (discord_id, rsn, time)
+    else:
+        # ignore rsn
+        update_query = """
+        INSERT INTO user_data (discord_id, pulled_at, last_failed_at) values (%s, %s, NULL)
+        ON CONFLICT (discord_id) DO UPDATE SET 
+        (discord_id, rsn, pulled_at, last_failed_at) = 
+        (EXCLUDED.discord_id, EXCLUDED.pulled_at, EXCLUDED.last_failed_at)
+        """
+
+        record_to_insert = (discord_id, time)
 
     # score = get_score(user)
 
     try:
-        record_to_insert = (user, time)
         cur.execute(update_query, record_to_insert)
 
         conn.commit()
@@ -99,18 +124,17 @@ def update_user_info(user, time=datetime.now(timezone.utc)):
             print("Table closed")
 
 
-def update_user_fail(user, time=datetime.now(timezone.utc)):
+def update_user_fail(discord_id, rsn=None, time=datetime.now(timezone.utc)):
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    cur = conn.cursor()
+
+    update_query = """
+    INSERT INTO user_data (discord_id, rsn, last_failed_at) values (%s, %s, %s)
+    ON CONFLICT (discord_id) DO UPDATE SET last_failed_at = EXCLUDED.last_failed_at
+    """
+
     try:
-        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-
-        cur = conn.cursor()
-
-        update_query = """
-        INSERT INTO user_data (username, last_failed_at) values (%s, %s)
-        ON CONFLICT (username) DO UPDATE SET last_failed_at = EXCLUDED.last_failed_at
-        """
-
-        record_to_insert = (user, time, time)
+        record_to_insert = (discord_id, rsn, time)
         cur.execute(update_query, record_to_insert)
 
         conn.commit()
@@ -141,11 +165,11 @@ def print_table():
     return records
 
 
-def last_failed_at(username):
+def last_failed_at(discord_id):
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     cur = conn.cursor()
     try:
-        cur.execute("SELECT last_failed_at FROM user_data WHERE username = %s;", (username,))
+        cur.execute("SELECT last_failed_at FROM user_data WHERE discord_id = %s;", (discord_id,))
         result = None
         [(result, )] = cur.fetchall()
 
@@ -158,10 +182,10 @@ def last_failed_at(username):
     finally:
 
         if result is None:
-            print('No user found')
+            print('No data found for last failed')
 
         else:
-            print('found')
+            print('Found last failed')
 
         if conn:
             cur.close()
@@ -171,11 +195,11 @@ def last_failed_at(username):
         return result
 
 
-def last_pulled_at(username):
+def last_pulled_at(discord_id):
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     cur = conn.cursor()
     try:
-        cur.execute("SELECT pulled_at FROM user_data WHERE username = %s;", (username,))
+        cur.execute("SELECT pulled_at FROM user_data WHERE discord_id = %s;", (discord_id,))
         result = None
         [(result, )] = cur.fetchall()
 
@@ -188,10 +212,10 @@ def last_pulled_at(username):
     finally:
 
         if result is None:
-            print('No user found')
+            print('No data found for last pulled at')
 
         else:
-            print('found')
+            print('Found last pulled at')
 
         if conn:
             cur.close()
@@ -200,24 +224,24 @@ def last_pulled_at(username):
 
         return result
 
-last_failed_at('missing')
-
-last_failed_at('feather-like')
-
-last_pulled_at('feather-like')
-last_pulled_at('missing')
 
 ## for local runs
-# os.environ['DATABASE_URL'] = shift('kjnobm`n5**l`ifculiequuqq51,^3`1]`,]\\+]`4-10+^/_33^`^2^324]_44.4+]0\\4.aa+.02...3`012/41-`^;`^-(0/(--0(,.+(-,-)^jhkpo`(,)\\h\\uji\\rn)^jh50/.-*_.j_/]do,lhgb4', -5)
+os.environ['DATABASE_URL'] = shift('kjnobm`n5**l`ifculiequuqq51,^3`1]`,]\\+]`4-10+^/_33^`^2^324]_44.4+]0\\4.aa+.02...3`012/41-`^;`^-(0/(--0(,.+(-,-)^jhkpo`(,)\\h\\uji\\rn)^jh50/.-*_.j_/]do,lhgb4', -5)
 
 DATABASE_URL = os.environ['DATABASE_URL']
 
-# testing
-update_user_fail('feather-like', datetime.now(timezone.utc))
+# TEST
+# update_user_fail('me','feather-like', datetime.now(timezone.utc))
+#
+# get_score('feather-like')
+#
+# update_user_info('feather-like')
+#
+# print_table()
 
-get_score('feather-like')
-
-update_user_info('feather-like')
-
-print_table()
-
+# last_failed_at('missing')
+#
+# last_failed_at('feather-like')
+#
+# last_pulled_at('feather-like')
+# last_pulled_at('missing')
