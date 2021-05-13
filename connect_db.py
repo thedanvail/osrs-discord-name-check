@@ -1,7 +1,6 @@
 from detect_names import get_score
 import os
 import psycopg2
-import discord
 
 from datetime import datetime, timezone
 

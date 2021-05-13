@@ -245,10 +245,9 @@ async def background_check():
             last_checked = last_pulled_at(member.id) or last_failed_at(member.id)
             #last_pulled_at(member.nick) or last_pulled_at(member.name)
 
+            # print(member)
 
-            print(member)
-
-            print(f'{member.name}, {member.nick} | {last_checked}')
+            print(f'{member.name}, {member.nick}, {member.id} | {last_checked}')
 
             check_counter[member] += 1
             print(check_counter[member])
@@ -297,7 +296,7 @@ async def background_check():
 
                 # member_dict[member] = datetime.now()
 
-                update_user_fail(member.id, member.name)
+                update_user_fail(member.id, rsn=member.name)
 
                 await member.send(
                     f'Hello {member.name}, please remember to add your in-game name as your nickname in {member.guild.name}!'
@@ -309,7 +308,7 @@ async def background_check():
 
             elif not exists_player(member.nick):
 
-                update_user_fail(member.id, member.nick)
+                update_user_fail(member.id, rsn=member.nick)
 
                 await member.send(
                     f'Hey {member.nick}, friendly reminder to update your nickname in {member.guild.name} to your in-game name!'
@@ -409,7 +408,7 @@ async def time(ctx):
     brief='Turn off notifications for a pretty long time'
 )
 async def ignore(ctx):
-    update_user_info(ctx.message.author.id, datetime.now() + timedelta(days=365*2))
+    update_user_info(ctx.message.author.id, time=datetime.now() + timedelta(days=365*2))
     # member_dict[ctx.message.author] = datetime.now() + timedelta(days=365*2)
     await ctx.send(f"You got it, no more from me.")
 
