@@ -167,16 +167,16 @@ def print_table():
 def last_failed_at(discord_id):
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     cur = conn.cursor()
+    result = None
     try:
         cur.execute("SELECT last_failed_at FROM user_data WHERE discord_id = %s;", (discord_id,))
-        result = None
         [(result, )] = cur.fetchall()
 
     except IndexError as error:
         print("User not in table", error)
 
     except (Exception, psycopg2.Error) as error:
-        print("Failed to update record into user table", error)
+        print(f"Failed to check last failed at for {discord_id}", error)
 
     finally:
 
@@ -197,16 +197,16 @@ def last_failed_at(discord_id):
 def last_pulled_at(discord_id):
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     cur = conn.cursor()
+    result = None
     try:
         cur.execute("SELECT pulled_at FROM user_data WHERE discord_id = %s;", (discord_id,))
-        result = None
         [(result, )] = cur.fetchall()
 
     except IndexError as error:
         print("User not in table", error)
 
     except (Exception, psycopg2.Error) as error:
-        print("Failed to update record into user table", error)
+        print(f"Failed to check last pulled at for {discord_id}", error)
 
     finally:
 

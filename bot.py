@@ -245,16 +245,17 @@ async def background_check():
             last_checked = last_pulled_at(member.id) or last_failed_at(member.id)
             #last_pulled_at(member.nick) or last_pulled_at(member.name)
 
-            # print(member)
-
-            print(f'{member.name}, {member.nick}, {member.id} | {last_checked}')
-
             check_counter[member] += 1
-            print(check_counter[member])
+
+            print(f'\n {member.name}, {member.nick}, {member.id} |'
+                  f' Last checked at {last_checked}, {check_counter[member]} checks')
+
+            print(
+                f"Debug condition, should be mostly true: {last_checked}, {last_checked is not None} and"
+                f" {last_checked + timedelta(hours=25)}, {datetime.now()}")
 
             # message once per day
             if (last_checked is not None) and (last_checked + timedelta(hours=25) > datetime.now()):
-                print(f"{last_checked}, {last_checked is not None} and {(last_checked + timedelta(hours=25) > datetime.now())}")
                 continue
 
             # cases:
