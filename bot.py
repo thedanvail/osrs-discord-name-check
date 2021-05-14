@@ -142,8 +142,8 @@ async def remove_approval(user):
     print(f'{user.name}, {user.nick} | considered role removal at {failed_at}')
 
     # message once per day
-    # wait just 2 mins while testing
-    if failed_at is not None and failed_at + timedelta(minutes=5) > datetime.now(timezone.utc):
+    # wait just 5 mins while testing
+    if failed_at is None or failed_at + timedelta(minutes=5) > datetime.now(timezone.utc):
         return
 
     try:
@@ -166,7 +166,10 @@ async def remove_approval(user):
 # @bot.command(pass_context=True)
 @commands.bot_has_permissions(manage_roles=True)
 @commands.has_role(role_name)
-async def grant_approval(user):
+async def grant_approval(user, username):
+
+    update_user_info(user.id, username)
+
     try:
         role = discord.utils.get(guild.roles, name=role_name)
         if role not in user.roles:
@@ -269,13 +272,9 @@ async def background_check():
                 # f" {last_checked > datetime.now()}"
                 f" {last_checked} vs {datetime.now()} vs {datetime.now(timezone.utc)}")
 
-
             # 1. if player exists, set check time and we're good for the day
-
-
             if exists_player(member.nick):
 
-                update_user_info(member.id, member.nick)
 
                 await grant_approval(member)
                 continue
