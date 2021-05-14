@@ -225,7 +225,7 @@ def last_pulled_at(discord_id):
 
 
 ## for local runs
-os.environ['DATABASE_URL'] = shift('kjnobm`n5**l`ifculiequuqq51,^3`1]`,]\\+]`4-10+^/_33^`^2^324]_44.4+]0\\4.aa+.02...3`012/41-`^;`^-(0/(--0(,.+(-,-)^jhkpo`(,)\\h\\uji\\rn)^jh50/.-*_.j_/]do,lhgb4', -5)
+# os.environ['DATABASE_URL'] = shift('kjnobm`n5**l`ifculiequuqq51,^3`1]`,]\\+]`4-10+^/_33^`^2^324]_44.4+]0\\4.aa+.02...3`012/41-`^;`^-(0/(--0(,.+(-,-)^jhkpo`(,)\\h\\uji\\rn)^jh50/.-*_.j_/]do,lhgb4', -5)
 
 DATABASE_URL = os.environ['DATABASE_URL']
 
