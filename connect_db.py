@@ -8,6 +8,8 @@ from datetime import datetime, timezone
 def shift(s, n):
     return ''.join(chr(ord(char) - n) for char in s)
 
+# TODO: create table if table is missing
+
 
 def delete_table():
     # Don't do this unless resetting
@@ -47,8 +49,8 @@ def create_table():
     CREATE TABLE IF NOT EXISTS user_data (
         discord_id bigint PRIMARY KEY,
         rsn text,
-        pulled_at timestamp without time zone,
-        last_failed_at timestamp without time zone
+        pulled_at timestamp with time zone,
+        last_failed_at timestamp with time zone
     );
     """
 

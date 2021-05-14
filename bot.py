@@ -143,7 +143,7 @@ async def remove_approval(user):
 
     # message once per day
     # wait just 2 mins while testing
-    if failed_at is not None and failed_at + timedelta(minutes=2) > datetime.now():
+    if failed_at is not None and failed_at + timedelta(minutes=5) > datetime.now(timezone.utc):
         return
 
     try:
@@ -266,8 +266,8 @@ async def background_check():
 
             print(
                 f"Debug condition, should be mostly true: {last_checked}, {last_checked is not None} and"
-                f" {last_checked + timedelta(hours=25) > datetime.now()}"
-                f" {last_checked + timedelta(hours=25)}, {datetime.now()}")
+                # f" {last_checked > datetime.now()}"
+                f" {last_checked} vs {datetime.now()} vs {datetime.now(timezone.utc)}")
 
 
             # 1. if player exists, set check time and we're good for the day
