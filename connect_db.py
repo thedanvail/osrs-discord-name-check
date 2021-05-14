@@ -58,7 +58,7 @@ def create_table():
         cur.execute(create_table_query)
         conn.commit()
 
-        print("Table created")
+        print("Table created or already exists")
 
         col_name_query = """
         SELECT column_name
@@ -149,7 +149,7 @@ def update_user_fail(discord_id, rsn=None, time=datetime.now(timezone.utc)):
         if conn:
             cur.close()
             conn.close()
-            print("Table closed")
+            # print("Table closed")
 
 
 def print_table():
@@ -183,15 +183,15 @@ def last_failed_at(discord_id):
     finally:
 
         if result is None:
-            print('No data found for last failed')
+            print(f'No data found for last failed for {discord_id}')
 
         else:
-            print('Found last failed')
+            print(f'Found last failed for {discord_id}')
 
         if conn:
             cur.close()
             conn.close()
-            print("Table closed")
+            # print("Table closed")
 
         return result
 
@@ -213,15 +213,15 @@ def last_pulled_at(discord_id):
     finally:
 
         if result is None:
-            print('No data found for last pulled at')
+            print(f'No data found for last pulled at for {discord_id}')
 
         else:
-            print('Found last pulled at')
+            print(f'Found last pulled at for {discord_id}')
 
         if conn:
             cur.close()
             conn.close()
-            print("Table closed")
+            # print("Table closed")
 
         return result
 
