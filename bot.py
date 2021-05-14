@@ -250,12 +250,10 @@ async def background_check():
             print(f'\n {member.name}, {member.nick}, {member.id} |'
                   f' Last checked at {last_checked}, {check_counter[member]} checks')
 
-            print(
-                f"Debug condition, should be mostly true: {last_checked}, {last_checked is not None} and"
-                f" {last_checked + timedelta(hours=25)}, {datetime.now()}")
 
             # message once per day
-            if (last_checked is not None) and (last_checked + timedelta(hours=25) > datetime.now()):
+            if (last_checked is not None) and (last_checked + timedelta(hours=25) > datetime.now(timezone.utc)):
+                "Good for the day, skipping checks"
                 continue
 
             # cases:
@@ -265,7 +263,16 @@ async def background_check():
             # 4. no hs nick and exists name: ask daily until fixed
             # 5. no hs nick and not exists name: ask daily until fixed
 
+
+            print(
+                f"Debug condition, should be mostly true: {last_checked}, {last_checked is not None} and"
+                f" {last_checked + timedelta(hours=25) > datetime.now()}"
+                f" {last_checked + timedelta(hours=25)}, {datetime.now()}")
+
+
             # 1. if player exists, set check time and we're good for the day
+
+
             if exists_player(member.nick):
 
                 update_user_info(member.id, member.nick)
@@ -281,7 +288,7 @@ async def background_check():
                 except discord.errors.Forbidden:
                     print(f"Can't edit names in {member.guild.name}")
 
-                update_user_info(member.id, member.name)
+                update_user_info(member.id, rsn=member.name)
 
                 await grant_approval(member)
                 continue
