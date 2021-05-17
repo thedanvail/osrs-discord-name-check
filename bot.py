@@ -142,6 +142,7 @@ async def remove_approval(user, username=None):
     # message once per day
     # wait just 5 mins while testing
     if failed_at is None or failed_at + timedelta(minutes=5) > datetime.now(timezone.utc):
+        update_user_fail(user.id, rsn=username)
         return
 
     update_user_fail(user.id, rsn=username)
@@ -244,16 +245,22 @@ async def background_check():
                 continue
 
             last_checked = last_pulled_at(member.id) or last_failed_at(member.id)
-            #last_pulled_at(member.nick) or last_pulled_at(member.name)
+
+            last_failed = last_failed_at(member.id)
+
+            print(f'\n {member.name}, {member.nick}, {member.id} \n'
+                  f' Last checked at {last_checked}, {check_counter[member]} checks \n'
+                  f' Last failed at {last_failed}')
+
+            if (last_failed is not None) and (last_checked is not None):
+
+                last_checked = max(last_checked, last_failed)
 
             check_counter[member] += 1
 
-            print(f'\n {member.name}, {member.nick}, {member.id} |'
-                  f' Last checked at {last_checked}, {check_counter[member]} checks')
-
             # message once per day
             if (last_checked is not None) and (last_checked + timedelta(hours=25) > datetime.now(timezone.utc)):
-                "Good for the day, skipping checks"
+                print("Good for the day, skipping checks")
                 continue
 
             # cases:
@@ -262,7 +269,6 @@ async def background_check():
             # 3. no nick and not exists name: ask daily until fixed
             # 4. no hs nick and exists name: ask daily until fixed
             # 5. no hs nick and not exists name: ask daily until fixed
-
 
             print(
                 f"Debug condition, should be mostly true: {last_checked}, {last_checked is not None} and"
@@ -330,6 +336,7 @@ async def background_check():
 async def ping(ctx) :
     await ctx.send(f"🏓 Pong with {str(round(client.latency, 2))}")
 
+
 @client.command(name="update")
 async def update(ctx, *args):
 
@@ -384,7 +391,6 @@ async def name_edit(member, name):
     brief='Returns time until next check'
 )
 async def timer(ctx):
-    # last_checked = member_dict[ctx.message.author]
     last_checked = last_pulled_at(ctx.message.author.id) or last_failed_at(ctx.message.author.id)
 
     if last_checked is None:
