@@ -133,7 +133,7 @@ async def on_member_join(member: discord.Member):
 # @bot.command(pass_context=True)
 @commands.bot_has_permissions(manage_roles=True)
 @commands.has_role(role_name)
-async def remove_approval(user, username):
+async def remove_approval(user, username=None):
 
     failed_at = last_failed_at(user.id) ##last_failed_at(user.nick) or last_failed_at(user.name)
 
@@ -166,7 +166,7 @@ async def remove_approval(user, username):
 # @bot.command(pass_context=True)
 @commands.bot_has_permissions(manage_roles=True)
 @commands.has_role(role_name)
-async def grant_approval(user, username):
+async def grant_approval(user, username=None):
 
     update_user_info(user.id, username)
 
