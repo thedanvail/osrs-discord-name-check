@@ -141,11 +141,9 @@ async def remove_approval(user, username=None):
 
     # message once per day
     # wait just 5 mins while testing
-    if failed_at is None or failed_at + timedelta(minutes=5) > datetime.now(timezone.utc):
-        update_user_fail(user.id, rsn=username)
+    if failed_at is None or failed_at + timedelta(days=5) > datetime.now(timezone.utc):
+        print(f"Didn't remove for {user.id}, within range of initial failure")
         return
-
-    update_user_fail(user.id, rsn=username)
 
     try:
         role = discord.utils.get(guild.roles, name=role_name)
@@ -272,8 +270,7 @@ async def background_check():
 
             print(
                 f"Debug condition, should be mostly true: {last_checked}, {last_checked is not None} and"
-                # f" {last_checked > datetime.now()}"
-                f" {last_checked} vs {datetime.now()} vs {datetime.now(timezone.utc)}")
+                f" {last_checked} vs {datetime.now(timezone.utc)}")
 
             # 1. if player exists, set check time and we're good for the day
             if exists_player(member.nick):
@@ -302,13 +299,12 @@ async def background_check():
             # 3. if no nickname and regular name doesn't match
             elif member.nick is None and not exists_player(member.name):
 
-                # member_dict[member] = datetime.now()
-
                 await member.send(
                     f'Hello {member.name}, please remember to add your in-game name '
                     f'as your nickname in {member.guild.name}!'
                 )
                 await remove_approval(member)
+                update_user_fail(member.id, rsn=member.name)
                 continue
 
             # if no nickname and regular name doesn't match
@@ -319,10 +315,11 @@ async def background_check():
                     f'Hey {member.nick}, friendly reminder to update your nickname '
                     f'in {member.guild.name} to your in-game name!'
                 )
-                # member_dict[member] = datetime.now()
+
                 await remove_approval(member)
-                await member.send(f'Debug message: time set to {last_pulled_at(member.id)}.'
-                                  f' {check_counter[member]} checks since last refresh')
+                update_user_fail(member.id, rsn=member.nick)
+                # await member.send(f'Debug message: time set to {last_pulled_at(member.id)}.'
+                #                   f' {check_counter[member]} checks since last refresh')
 
         # seconds between loop
         await asyncio.sleep(60)
