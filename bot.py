@@ -137,7 +137,7 @@ async def remove_approval(user, username=None):
 
     last_succeeded_at = last_pulled_at(user.id) ##last_failed_at(user.nick) or last_failed_at(user.name)
 
-    print(f'{user.name}, {user.nick} | considered role removal at {failed_at}')
+    print(f'{user.name}, {user.nick} | considered role removal at {last_succeeded_at}')
 
     # message once per day
     # wait just 10 mins while testing
@@ -152,7 +152,7 @@ async def remove_approval(user, username=None):
             await user.remove_roles(role)
             await user.send("Sorry, gonna need you to update your name to your in-game name to approve you again!")
 
-            print(f'{user.name}, {user.nick} | role removed at {failed_at}')
+            print(f'{user.name}, {user.nick} | role removed at {last_succeeded_at}')
 
     except discord.errors.Forbidden:
         print("Whoops, maybe you're trying to edit server admin?")
