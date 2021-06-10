@@ -135,13 +135,13 @@ async def on_member_join(member: discord.Member):
 @commands.has_role(role_name)
 async def remove_approval(user, username=None):
 
-    failed_at = last_failed_at(user.id) ##last_failed_at(user.nick) or last_failed_at(user.name)
+    last_succeeded_at = last_pulled_at(user.id) ##last_failed_at(user.nick) or last_failed_at(user.name)
 
     print(f'{user.name}, {user.nick} | considered role removal at {failed_at}')
 
     # message once per day
-    # wait just 5 mins while testing
-    if failed_at is None or failed_at + timedelta(days=5) > datetime.now(timezone.utc):
+    # wait just 10 mins while testing
+    if last_succeeded_at is None or last_succeeded_at + timedelta(minutes=10) > datetime.now(timezone.utc):
         print(f"Didn't remove for {user.id}, within range of initial failure")
         return
 
