@@ -69,6 +69,13 @@ async def on_member_update(before, after):
         await grant_approval(after, after.nick)
         return
 
+    elif after.nick is None and exists_player(after.name):
+        await after.send(
+            f'Looks great, thanks {after.name}!'
+        )
+        await grant_approval(after, after.name)
+        return
+
     elif after.nick is None and not exists_player(after.name):
         await after.send(
             f'Did you just remove your nickname? It looks like your discord name doesn\'t quite match.'
@@ -135,9 +142,11 @@ async def on_member_join(member: discord.Member):
 @commands.has_role(role_name)
 async def remove_approval(user, username=None):
 
-    last_succeeded_at = last_pulled_at(user.id) ##last_failed_at(user.nick) or last_failed_at(user.name)
+    update_user_fail(user.id, rsn=user.name)
+    last_succeeded_at = last_pulled_at(user.id)
 
-    print(f'{user.name}, {user.nick} | considered role removal at {last_succeeded_at}')
+    print(f'{user.name}, {user.nick} | considered role removal at {last_succeeded_at}, '
+          f'removal time {datetime.now(timezone.utc)}')
 
     # message once per day
     # wait just 10 mins while testing
@@ -167,7 +176,7 @@ async def remove_approval(user, username=None):
 @commands.has_role(role_name)
 async def grant_approval(user, username=None):
 
-    update_user_info(user.id, username)
+    update_user_info(discord_id=user.id, rsn=username)
 
     try:
         role = discord.utils.get(guild.roles, name=role_name)
@@ -388,6 +397,9 @@ async def name_edit(member, name):
     brief='Returns time until next check'
 )
 async def timer(ctx):
+    print(f'Success at: {last_pulled_at(ctx.message.author.id)} \n'
+          f'Failed at: {last_failed_at(ctx.message.author.id)} \n'
+          f'Current time: {datetime.now(timezone.utc)}')
     last_checked = last_pulled_at(ctx.message.author.id) or last_failed_at(ctx.message.author.id)
 
     if last_checked is None:

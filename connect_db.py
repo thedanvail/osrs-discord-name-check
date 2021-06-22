@@ -98,10 +98,10 @@ def update_user_info(discord_id, rsn=None, time=datetime.now(timezone.utc)):
     else:
         # ignore rsn
         update_query = """
-        INSERT INTO user_data (discord_id, pulled_at, last_failed_at) values (%s, %s, NULL)
+        INSERT INTO user_data (discord_id, rsn, pulled_at, last_failed_at) values (%s, NULL %s, NULL)
         ON CONFLICT (discord_id) DO UPDATE SET 
         (discord_id, rsn, pulled_at, last_failed_at) = 
-        (EXCLUDED.discord_id, EXCLUDED.pulled_at, EXCLUDED.last_failed_at)
+        (EXCLUDED.discord_id, EXCLUDED.rsn, EXCLUDED.pulled_at, EXCLUDED.last_failed_at)
         """
 
         record_to_insert = (discord_id, time)
@@ -171,7 +171,7 @@ def last_failed_at(discord_id):
     cur = conn.cursor()
     result = None
     try:
-        cur.execute("SELECT last_failed_at FROM user_data WHERE discord_id = %s;", (discord_id,))
+        cur.execute("SELECT max(last_failed_at) FROM user_data WHERE discord_id = %s;", (discord_id,))
         [(result, )] = cur.fetchall()
 
     except IndexError as error:
@@ -201,7 +201,7 @@ def last_pulled_at(discord_id):
     cur = conn.cursor()
     result = None
     try:
-        cur.execute("SELECT pulled_at FROM user_data WHERE discord_id = %s;", (discord_id,))
+        cur.execute("SELECT max(pulled_at) FROM user_data WHERE discord_id = %s;", (discord_id,))
         [(result, )] = cur.fetchall()
 
     except IndexError as error:
