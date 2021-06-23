@@ -150,7 +150,7 @@ async def remove_approval(user, username=None):
 
     # message once per day
     # wait just 10 mins while testing
-    if last_succeeded_at is None or last_succeeded_at + timedelta(minutes=10) > datetime.now(timezone.utc):
+    if last_succeeded_at is None or last_succeeded_at + timedelta(days=5) > datetime.now(timezone.utc):
         print(f"Didn't remove for {user.id}, within range of initial failure")
         return
 
@@ -233,7 +233,11 @@ async def background_check():
     # guild = client.get_guild(797237739748851713)
 
     # bot testing
-    guild = client.get_guild(699647540340981790)
+    # guild = client.get_guild(699647540340981790)
+
+    # LoA
+    guild = client.get_guild(319781102950547457)
+
 
     global member_dict
 
