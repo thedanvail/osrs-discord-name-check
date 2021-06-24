@@ -192,8 +192,6 @@ async def grant_approval(user, username=None):
         print(f"Finished granting")
         # await user.send("You've been granted the speaking stick!")
 
-
-
 # check name
 #  if name exists, allow speaking
 
@@ -237,7 +235,6 @@ async def background_check():
 
     # LoA
     guild = client.get_guild(319781102950547457)
-
 
     global member_dict
 
@@ -295,48 +292,41 @@ async def background_check():
             elif member.nick is None and exists_player(member.name):
 
                 try:
+                    await grant_approval(member, member.name)
                     await member.edit(nick=member.name, reason='update nickname to name for consistency')
                 except discord.errors.Forbidden:
                     print(f"Can't edit names in {member.guild.name}")
-
-                await grant_approval(member, member.name)
                 continue
-
-                # await member.send(
-                #     f'If your in-game name is {member.name}, I\'m impressed with your identity consistency!'
-                #     f'If not, please update your nickname in {member.guild.name} so we know who you are.'
-                # )
-                # await member.edit(nick=member.name)
-                # member_dict[member] = datetime.now()
 
             # 3. if no nickname and regular name doesn't match
             elif member.nick is None and not exists_player(member.name):
-
-                await member.send(
-                    f'Hello {member.name}, please remember to add your in-game name '
-                    f'as your nickname in {member.guild.name}!'
-                )
-                await remove_approval(member)
-                update_user_fail(member.id, rsn=member.name)
+                try:
+                    await remove_approval(member)
+                    await member.send(
+                        f'Hello {member.name}, please remember to add your in-game name '
+                        f'as your nickname in {member.guild.name}!'
+                    )
+                except discord.errors.Forbidden:
+                    await remove_approval(member)
+                    print(f"Nickname missing but name doesn't work in {member.guild.name}")
                 continue
 
             # if no nickname and regular name doesn't match
 
             elif not exists_player(member.nick):
-
-                await member.send(
-                    f'Hey {member.nick}, friendly reminder to update your nickname '
-                    f'in {member.guild.name} to your in-game name!'
-                )
-
-                await remove_approval(member)
-                update_user_fail(member.id, rsn=member.nick)
-                # await member.send(f'Debug message: time set to {last_pulled_at(member.id)}.'
-                #                   f' {check_counter[member]} checks since last refresh')
+                try:
+                    await remove_approval(member)
+                    await member.send(
+                        f'Hey {member.nick}, friendly reminder to update your nickname '
+                        f'in {member.guild.name} to your in-game name!'
+                    )
+                except discord.errors.Forbidden:
+                    await remove_approval(member)
+                    print(f"Nickname missing but name doesn't work in {member.guild.name}")
+                continue
 
         # seconds between loop
         await asyncio.sleep(60)
-
 
 
 @client.command(
